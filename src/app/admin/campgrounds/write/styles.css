@@ -1,0 +1,26 @@
+/* TableRow 높이 조정 */
+.custom-table-row {
+  height: 40px; /* TableRow 높이 */
+}
+
+/* TableCell 크기 및 폰트 조정 */
+.custom-table-cell {
+  width: 30%; /* TableCell 너비 */
+  font-size: 1rem; /* 글씨 크기 */
+  padding: 10px; /* 내부 여백 */
+}
+
+/* TableCell 오른쪽 */
+.custom-table-cell-content {
+  padding: 10px; /* 내부 여백 */
+}
+
+/* 검색 버튼 */
+.search-button {
+  margin-left: 10px; /* 텍스트 필드와 버튼 간격 */
+}
+
+/* 입력 필드 스타일 */
+.input-field {
+  width: 100%; /* 전체 너비 */
+}

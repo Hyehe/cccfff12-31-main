@@ -1,0 +1,262 @@
+.camping_layout {
+    display: flex;
+    position: relative;
+    width: 100%;
+    margin: auto;
+    justify-content: center; /* 자식 요소를 수직 가운데 정렬 */
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .camping_info_box {
+    position: relative;
+    width: 80%;
+    height: auto;
+    overflow: hidden;
+    clear: both;
+    margin-bottom: 100px;
+  }
+  .camping_info_box .img_b {
+    width: 60%;
+    height: 484px;
+    float: left;
+    background: #eee;
+    border: 1px solid #dedede;
+    box-sizing: border-box;
+  }
+  .camping_info_box .img_b > img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+  .camping_info_box .content_tb {
+    width: 37%;
+    float: right;
+    height: 484px;
+    overflow: hidden;
+    border-radius: 5px;
+  }
+  .camping_info_box .content_tb table {
+    width: 100%;
+    font-size: 14px;
+  }
+  .camping_info_box .content_tb tbody tr:nth-child(1) th {
+    border-top: 2px solid #e55450;
+  }
+  .camping_info_box .content_tb tbody tr:nth-child(1) td {
+    border-top: 2px solid #000;
+  }
+  .camping_info_box .content_tb table tr th {
+    padding: 11px 10px;
+    border-bottom: 1px solid #c8c8c8;
+    text-align: left;
+    color: #000;
+    line-height: 25px;
+  }
+  .camping_info_box .content_tb table tr td {
+    padding: 11px 10px;
+    border-bottom: 1px solid #c8c8c8;
+    line-height: 25px;
+  }
+  .camping_info_box .content_tb table tr.camp_call_tmVer {
+    display: none;
+  }
+  .btn {
+    display: flex;
+    padding: 10px;
+    width: auto;
+    margin-top: 10px;
+    justify-content: center;
+  }
+  .btn .reserve {
+    border: 1px solid #000;
+    background-color: #375b9c;
+    color: #fff;
+    margin: 0 10px;
+    width: 40%;
+    height: 50px;
+  }
+  .btn .save {
+    border: 1px solid #000;
+    background-color: #e87373;
+    color: #fff;
+    margin: 0 10px;
+    width: 40%;
+    height: 50px;
+  }
+  
+  .camping-info {
+    /* 정보 탭의 폰트 margin 설정 */
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  
+  .tabs {
+    /* 전체 탭 속성 */
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+    width: 80%;
+    margin: auto;
+    justify-content: center; /* 자식 요소를 수직 가운데 정렬 */
+    align-items: center;
+  }
+  
+  .tab-button {
+    /* 각 탭의 속성 */
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+    background: #f9f9f9;
+    border: none;
+    outline: none;
+    text-align: center;
+    font-size: 16px;
+  }
+  
+  .tab-button.active {
+    /* 각 탭 클릭시 버튼 상태 */
+    background: #fff;
+    border-bottom: 2px solid #7aa806;
+    font-weight: bold;
+    color: #7aa806;
+  }
+  
+  .tab-content {
+    /* 각 탭의 요소 */
+    border-bottom: 1px solid #ddd;
+    position: relative;
+    width: 80%;
+    margin: auto;
+    /* 자식 요소를 수직 가운데 정렬 */
+    align-items: center;
+    margin-top: 20px;
+  }
+  #intro > div {
+    /* 각각의 탭 내용 구분을 위한 구분선 설정 */
+    border-bottom: 2px solid #111; /* 아래쪽 선 */
+    padding: 20px; /* 내부 여백 */
+    margin: 10px 0 20px 0; /* 상단 여백 */
+  }
+  
+  .rightIcon {
+    /* 아이콘 속성 */
+    background-color: #007bff;
+    border-radius: 50%;
+    color: #f9f9f9;
+  }
+  .camping-info-list {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+  .etc-table {
+    width: 100%;
+    height: auto;
+    {id}en;
+  }
+  .etc-table table {
+    width: 100%;
+    font-size: 14px;
+  }
+  .etc-table tbody tr:nth-child(1) th {
+    border-top: 2px solid #e55450;
+  }
+  .etc-table tbody tr:nth-child(1) td {
+    border-top: 2px solid #000;
+  }
+  .etc-table table tr th {
+    padding: 11px 10px;
+    border-bottom: 1px solid #c8c8c8;
+    text-align: left;
+    color: #000;
+    line-height: 25px;
+  }
+  .etc-table table tr td {
+    padding: 11px 10px;
+    border-bottom: 1px solid #c8c8c8;
+    line-height: 25px;
+  }
+  .etc-table table tr.camp_call_tmVer {
+    display: none;
+  }
+  
+  /* 글쓰기 버튼 CSS */
+  #events .write-button {
+    background-color: #2d6a4f; /* 다크그린 색 */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  #events .write-button:hover {
+    background-color: #1b4d3a;
+  }
+  
+
+  .write-form {
+    margin-top: 10px; /* 버튼 아래 바로 나타나게 하기 위해 마진 설정 */
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .write-form textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  
+  .submit-button {
+    background-color: #2d6a4f;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .submit-button:hover {
+    background-color: #1b4d3a;
+  }
+  .review-title {
+    display: flex;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    justify-content: space-between;
+  }
+  .review-write {
+    position: relative;
+    width: 100%;
+    justify-content: center; /* 자식 요소를 수직 가운데 정렬 */
+    align-items: center;
+    margin: 20px auto;
+  }
+  .stars {
+    display: flex;
+    padding-top: 5px;
+  }
+
+  .stars svg {
+    color: gray;
+    cursor: pointer;
+  }
+
+  .stars:hover svg {
+    color: yellow;
+  }
+
+  .stars svg:hover ~ svg {
+    color: gray;
+  }
+
+  .stars .yellow-star {
+    color: yellow;
+  }

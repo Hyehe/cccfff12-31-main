@@ -1,0 +1,59 @@
+.camping-list {
+  display: grid;
+  gap: 20px; /* 아이템 간 간격 설정 */
+  padding-left: 150px;
+  padding-right: 150px;
+  padding-bottom: 150px;
+}
+
+.camping-item {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.camping-item-content {
+  display: flex; /* Flexbox로 사진과 텍스트를 가로로 정렬 */
+  align-items: center;
+  gap: 20px; /* 사진과 텍스트 사이의 간격 */
+}
+
+.camping-item-img {
+  width: 400px; /* 이미지 크기 */
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.camping-item-text {
+  flex: 1; /* 텍스트 영역이 나머지 공간을 차지하도록 설정 */
+  text-align: left;
+}
+
+.camping-item-title {
+  font-size: 1.5rem; /* 캠핑장 이름 크기 */
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: black;
+}
+
+.camping-item-address {
+  font-size: 1rem; /* 설명 텍스트 크기 */
+  margin-bottom: 5px;
+  color: #666; /* 텍스트 색상 */
+}
+
+.camping-item-facilities {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center; /* 수평 중앙 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+  margin-top: 20px; /* 위쪽 여백 */
+}
