@@ -54,7 +54,7 @@ export default function MeetPage() {
   const [userName, setUserName] = useState("");
 
   // 기존 상태 변수들 아래에 추가
-  const [isMember, setIsMember] = useState(false);
+  //const [isMember, setIsMember] = useState(false);
 
 
   // 전체 멤버를 표시하는 모달 상태
@@ -117,13 +117,13 @@ export default function MeetPage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (Array.isArray(members) && members.length > 0 && userIdx) {
-      const memberExists = members.some(member => Number(member.user_idx) === Number(userIdx));
-      setIsMember(memberExists);
-      console.log(`isMember set to: ${memberExists}`); // 디버깅용 로그
-    }
-  }, [members, userIdx]);
+  // useEffect(() => {
+  //   if (Array.isArray(members) && members.length > 0 && userIdx) {
+  //     const memberExists = members.some(member => Number(member.user_idx) === Number(userIdx));
+  //     setIsMember(memberExists);
+  //     console.log(`isMember set to: ${memberExists}`); // 디버깅용 로그
+  //   }
+  // }, [members, userIdx]);
 
 
   const getUserIdx = async (token) => {
@@ -409,7 +409,14 @@ export default function MeetPage() {
       <Box sx={{ maxWidth: "800px", margin: "0 auto", padding: "0 20px" }}>
         {/* 햄버거 메뉴 */}
         <IconButton
-          onClick={handleDrawerToggle}
+        // meeting.member || Number(userIdx) === Number(meeting.leader_idx)  handleDrawerToggle
+        onClick={() => {
+          if (meeting.member || Number(userIdx) === Number(meeting.leader_idx)) {
+            handleDrawerToggle();
+          } else {
+            alert("가입이 필요합니다.");
+          }
+        }}
           sx={{
             position: "fixed",
             bottom: "26px",
@@ -824,18 +831,24 @@ export default function MeetPage() {
             >
               사진첩
             </Typography>
-            <Link href={`/MeetingGroup/regular-Meeting/detail/${meetingId}/photogallery`} passHref>
-              <Button
-                endIcon={<ArrowForwardIosIcon fontSize="small" />}
-                sx={{
-                  fontWeight: "bold",
-                  color: "#28a745",
-                  "&:hover": { textDecoration: "underline" },
-                }}
-              >
-                더보기
-              </Button>
-            </Link>
+            <Button
+              endIcon={<ArrowForwardIosIcon fontSize="small" />}
+              sx={{
+                fontWeight: "bold",
+                color: "#28a745",
+                "&:hover": { textDecoration: "underline" },
+              }}
+              onClick={() => {
+                if (meeting.member || Number(userIdx) === Number(meeting.leader_idx)) {
+                  router.push(`/MeetingGroup/regular-Meeting/detail/${meetingId}/photogallery`);
+                } else {
+                  alert("가입한 멤버만 접근 가능합니다.");
+                }
+              }}
+            >
+              더보기
+            </Button>
+
           </Box>
           <Grid container spacing={2}>
             {Array.isArray(recentPhotos) && recentPhotos.length > 0 ? (
@@ -878,18 +891,24 @@ export default function MeetPage() {
             >
               게시판
             </Typography>
-            <Link href={`/MeetingGroup/regular-Meeting/detail/${meetingId}/bulletinboard`} passHref>
-              <Button
-                endIcon={<ArrowForwardIosIcon fontSize="small" />}
-                sx={{
-                  fontWeight: "bold",
-                  color: "#28a745",
-                  "&:hover": { textDecoration: "underline" },
-                }}
-              >
-                더보기
-              </Button>
-            </Link>
+            <Button
+              endIcon={<ArrowForwardIosIcon fontSize="small" />}
+              sx={{
+                fontWeight: "bold",
+                color: "#28a745",
+                "&:hover": { textDecoration: "underline" },
+              }}
+              onClick={() => {
+                if (meeting.member || Number(userIdx) === Number(meeting.leader_idx)) {
+                  router.push(`/MeetingGroup/regular-Meeting/detail/${meetingId}/bulletinboard`);
+                } else {
+                  alert("가입이 필요합니다.");
+                }
+              }}
+            >
+              더보기
+            </Button>
+
           </Box>
           {Array.isArray(posts) && posts.length > 0 ? (
             posts.map((post) => (
