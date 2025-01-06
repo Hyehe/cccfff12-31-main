@@ -54,7 +54,7 @@ export default function MeetPage() {
   const [userName, setUserName] = useState("");
 
   // 기존 상태 변수들 아래에 추가
-const [isMember, setIsMember] = useState(false);
+  const [isMember, setIsMember] = useState(false);
 
 
   // 전체 멤버를 표시하는 모달 상태
@@ -124,7 +124,7 @@ const [isMember, setIsMember] = useState(false);
       console.log(`isMember set to: ${memberExists}`); // 디버깅용 로그
     }
   }, [members, userIdx]);
-  
+
 
   const getUserIdx = async (token) => {
     try {
@@ -238,7 +238,7 @@ const [isMember, setIsMember] = useState(false);
       }
     }
   }, [meeting, userIdx]);
-  
+
   // 가입하기 창
   const handleJoinMeeting = () => {
     axiosInstance.post(`/regular-meetings/detail/${meetingId}/join`, null, {
@@ -259,6 +259,26 @@ const [isMember, setIsMember] = useState(false);
       });
   };
 
+  // 탈퇴하기 창
+  const handleLeaveMeeting = () => {
+    if (!confirm("정말 모임을 탈퇴하시겠습니까?")) return;
+
+    console.log("Leaving meeting:", { meetingId, userIdx });
+
+    axiosInstance.post(`/regular-meetings/detail/${meetingId}/leave`, null, {
+      params: { user_idx: userIdx },
+    })
+      .then(() => {
+        alert("모임을 성공적으로 탈퇴했습니다.");
+        // 탈퇴 후 서버에서 meeting detail을 다시 불러오기
+        fetchMeetingDetails();
+      })
+      .catch((err) => {
+        console.error("모임 탈퇴 실패:", err);
+        const errorMsg = err.response?.data || "모임 탈퇴 중 오류가 발생했습니다.";
+        alert("모임 탈퇴 중 오류가 발생했습니다.", errorMsg);
+      });
+  };
 
   // 수정 모달 열 때(기존 데이터 세팅)
   const openEditModal = () => {
@@ -312,11 +332,11 @@ const [isMember, setIsMember] = useState(false);
         `/regular-meetings/detail/${meeting.meeting_idx}`,
         formData,
         {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-    );
+      );
       alert("모임 수정 완료");
       setEditModalOpen(false);
       // 수정 후 새로고침 or fetchMeetingDetails()
@@ -680,9 +700,40 @@ const [isMember, setIsMember] = useState(false);
                 "{userName}" 모임장님, 환영합니다.
               </Typography>
             ) : meeting.member ? (
-              <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, color: "black" }}>
-                {userName}님, 환영합니다!
-              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  mt: 2, // 위쪽 여백 조정
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  fontWeight="bold"
+                  sx={{ color: "black" }}
+                >
+                  {userName}님, 환영합니다!
+                </Typography>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={handleLeaveMeeting}
+                  sx={{
+                    position: 'absolute',
+                    right: 0,
+                    fontSize: "10px",
+                    width: "80px",
+                    height: "20px",
+                    borderColor: "green",
+                    color: "green",
+                    "&:hover": { backgroundColor: "lightgreen", borderColor: "green" },
+                  }}
+                >
+                  탈퇴하기
+                </Button>
+              </Box>
             ) : (
               <>
                 <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, color: "black" }}>
