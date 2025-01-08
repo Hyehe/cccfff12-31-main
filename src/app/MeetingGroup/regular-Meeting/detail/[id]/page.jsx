@@ -192,9 +192,7 @@ export default function MeetPage() {
     }
   }, [meeting, members]);
 
-  // -----------------------------
   // 3) 가입 / 탈퇴 / 수정 / 삭제 로직
-  // -----------------------------
   const handleJoinMeeting = () => {
     axiosInstance.post(`/regular-meetings/detail/${meetingId}/join`, null, {
       params: { user_idx: userIdx },
@@ -307,9 +305,7 @@ export default function MeetPage() {
     }
   };
 
-  // -----------------------------
   // 4) 기타 함수들
-  // -----------------------------
   const handleImageChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -318,9 +314,7 @@ export default function MeetPage() {
     }
   };
 
-  // -----------------------------
   // 5) 렌더링
-  // -----------------------------
   if (loading) {
     return <Typography>Loading...</Typography>;
   }
@@ -346,9 +340,7 @@ export default function MeetPage() {
   return (
     <Box sx={{ backgroundColor: "#f8f9fa", padding: "20px 0" }}>
       <Box sx={{ maxWidth: "800px", margin: "0 auto", padding: "0 20px" }}>
-        {/* =========================
-            1) 우측 하단 햄버거 버튼
-        ========================== */}
+        {/* 1) 우측 하단 햄버거 버튼 */}
         <IconButton
           onClick={() => {
             // 모임장 or 가입 멤버만 드로어 열기 가능
@@ -437,9 +429,7 @@ export default function MeetPage() {
           </Box>
         </Drawer>
 
-        {/* =========================
-            2) 상단 메인 배너
-        ========================== */}
+        {/*  2) 상단 메인 배너 */}
         <Box
           sx={{
             position: "relative",
@@ -488,9 +478,7 @@ export default function MeetPage() {
           </Box>
         </Box>
 
-        {/* =========================
-            3) 모임 소개
-        ========================== */}
+        {/*  3) 모임 소개*/}
         <Box sx={{ mt: "70px", mb: 3, position: 'relative' }}>
           <Typography
             variant="h6"
@@ -559,9 +547,7 @@ export default function MeetPage() {
           )}
         </Box>
 
-        {/* =========================
-            4) 멤버 정보
-        ========================== */}
+        {/*  4) 멤버 정보 */}
         <Box
           sx={{
             backgroundColor: "#eaffea",
@@ -747,9 +733,7 @@ export default function MeetPage() {
           </Modal>
         </Box>
 
-        {/* ====================================
-            5) 게시판 / 사진첩 2개 박스 가로 배치
-        ====================================== */}
+        {/* 5) 게시판 / 사진첩 2개 박스 가로 배치*/}
         <Box sx={{ mb: 4 }}>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
             {/* ------- (1) 게시판 박스 ------- */}
@@ -857,9 +841,7 @@ export default function MeetPage() {
         </Box>
       </Box>
 
-      {/* =========================
-          6) 모임 수정 모달
-      ========================== */}
+      {/* 6) 모임 수정 모달*/}
       <Dialog open={editModalOpen} onClose={closeEditModal} fullWidth maxWidth="sm">
         <DialogTitle>모임 수정하기</DialogTitle>
         <DialogContent>
