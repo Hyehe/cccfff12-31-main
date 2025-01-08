@@ -26,4 +26,13 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// 응답 인터셉터 (필요 시)
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // 전역 에러 핸들링
+    return Promise.reject(error);
+  }
+);
+
 export default axiosInstance;
