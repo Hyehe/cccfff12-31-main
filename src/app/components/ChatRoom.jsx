@@ -1,8 +1,6 @@
-// src/components/ChatRoom.jsx
-
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, IconButton, Avatar, Paper, Button, Modal } from '@mui/material';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import CallIcon from '@mui/icons-material/Call';
@@ -16,13 +14,20 @@ import PropTypes from 'prop-types';
 import useAuthStore from 'store/authStore';
 import axiosInstance from '../utils/axiosInstance';
 
-const ChatRoom = ({ roomId, userIdx, userName, onClose }) => {
+const ChatRoom = ({ roomId, userIdx, onClose }) => {
   const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://localhost:8080/uploads";
   const [messages, setMessages] = useState([]);
   const [stompClient, setStompClient] = useState(null);
   const [connected, setConnected] = useState(false);
+  const [roomInfo, setRoomInfo] = useState(null);
 
   const token = useAuthStore((state) => state.token);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    // messages가 변경될 때마다 자동스크롤을 최신 메시지로 이동
+    messagesEndRef.current?.scrollIntoView({ behavior: 'auto' }); //smooth
+  }, [messages]);
 
   // 첫 로딩 시 db에서 채팅 내역 불러오기
   useEffect(() => {
@@ -31,13 +36,13 @@ const ChatRoom = ({ roomId, userIdx, userName, onClose }) => {
     const fetchMessages = async () => {
       try {
         const response = await axiosInstance.get(`/chat/messages/${roomId}`);
-// response.data가 정말 배열인지 확인
-if (Array.isArray(response.data)) {
-  setMessages(response.data);
-} else {
-  console.error('서버에서 메시지 배열이 오지 않았습니다:', response.data);
-  setMessages([]);
-}
+        // response.data가 정말 배열인지 확인
+        if (Array.isArray(response.data)) {
+          setMessages(response.data);
+        } else {
+          console.error('서버에서 메시지 배열이 오지 않았습니다:', response.data);
+          setMessages([]);
+        }
 
       } catch (error) {
         console.error('채팅 내역 불러오기 실패:', error);
@@ -56,6 +61,8 @@ if (Array.isArray(response.data)) {
 
     client.connect({ Authorization: `Bearer ${token}` }, () => {
       console.log('Connected to WebSocket');
+      console.log('roomId:', roomId);
+      console.log('userIdx:', userIdx);
       setConnected(true);
 
       // 특정 채팅방 구독, 새 메시지 실시간 수신
@@ -119,7 +126,7 @@ if (Array.isArray(response.data)) {
       room_idx: roomId,
       sender_idx: userIdx,
       content: content,
-      message_type: 'text',
+      message_type: file ? 'file' : 'text',
       created_at: new Date().toISOString(),
       file_url: fileUrl,
     };
@@ -160,16 +167,15 @@ if (Array.isArray(response.data)) {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar src={"/images/picture4.png"} alt="user1" />  
-          {/* sender_profile_image ? `${IMAGE_BASE_URL}/${sender_profile_image}` :  */}
-          <Box sx={{ marginLeft: '10px' }}>
-            <Typography variant="h6" fontWeight="bold">
-              {`채팅방 ID: ${roomId}`}
-            </Typography>
-            <Typography variant="caption" color="textSecondary">
-              Active Now
-            </Typography>
-          </Box>
+          <Avatar
+            src={roomInfo?.profile_image
+              ? `${IMAGE_BASE_URL}/${roomInfo.profile_image}`
+              : '/images/picture3.png'}
+            alt="모임 대표이미지"
+          />
+          <Typography variant="h6">
+            {roomInfo?.meeting_name || `채팅방 ID: ${roomId}`}
+          </Typography>
         </Box>
         <Box>
           <IconButton onClick={onClose}>
@@ -185,13 +191,13 @@ if (Array.isArray(response.data)) {
             key={index}
             sx={{
               display: 'flex',
-              justifyContent: msg.sender_idx === userIdx ? 'flex-end' : 'flex-start',
+              justifyContent: msg.sender_idx === Number(userIdx) ? 'flex-end' : 'flex-start',
               alignItems: 'center',
               marginBottom: '10px',
             }}
           >
             {/* 상대방 메시지일 경우 아바타 표시 */}
-            {msg.sender_idx !== userIdx && (
+            {!(Number(userIdx) === msg.sender_idx) && (
               <Avatar
                 src={msg.sender_avatar_url ? `${IMAGE_BASE_URL}/${msg.sender_avatar_url}` : '/images/picture2.jpg'}
                 alt="상대방 아바타"
@@ -218,8 +224,15 @@ if (Array.isArray(response.data)) {
                 <Typography variant="body1">{msg.content}</Typography>
               )}
             </Paper>
+            {(Number(userIdx) === msg.sender_idx) && (
+              <Avatar
+                src={msg.sender_avatar_url ? `${IMAGE_BASE_URL}/${msg.sender_avatar_url}` : '/images/user1.png'}
+                sx={{ width: 35, height: 35, marginLeft: '10px' }}
+              />
+            )}
           </Box>
         ))}
+        <div ref={messagesEndRef} />  {/* 스크롤 최근 위치로 */}
       </Box>
 
       {/* 메시지 입력 영역 */}

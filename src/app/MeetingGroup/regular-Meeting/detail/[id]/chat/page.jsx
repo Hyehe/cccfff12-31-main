@@ -17,6 +17,8 @@ export default function ChatPage() {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
   const [userName, setUserName] = useState("");
   const [userIdx, setUserIdx] = useState(null);
+  const [chatRoom, setChatRoom] = useState(null);
+  const [roomInfo, setRoomInfo] = useState(null);
   
   // 로그인된 사용자 idx
   // const userIdx = useAuthStore((state) => state.userIdx) || 1;
@@ -86,6 +88,17 @@ export default function ChatPage() {
     fetchOrCreateRoom();
   }, [id, userIdx]);
 
+  useEffect(() => {
+    if (!room?.room_idx) return;
+
+    // room?.room_idx => 실제 채팅방 PK
+    axiosInstance.get(`/chat/room-info/${room.room_idx}`)
+      .then((res) => {
+        setRoomInfo(res.data); // roomInfo 설정
+      })
+      .catch((err) => console.error("채팅방 정보 불러오기 실패:", err));
+  }, [room?.room_idx]);
+
   if (loading) {
     return <div>로딩 중...</div>;
   }
@@ -101,6 +114,7 @@ export default function ChatPage() {
         userIdx={userIdx}
         userName="TODO_유저이름"
         onClose={() => router.back()}
+        roomInfo={roomInfo}
       />
     </div>
   );
