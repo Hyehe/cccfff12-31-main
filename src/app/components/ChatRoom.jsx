@@ -55,6 +55,7 @@ const ChatRoom = ({ roomId, userIdx, onClose }) => {
   // WebSocket 연결
   useEffect(() => {
     if (!roomId || !userIdx || !token) return;
+    console.log('Establishing WebSocket connection...');
 
     const socket = new SockJS('http://localhost:8080/api/ws/chat');
     const client = Stomp.over(socket);
@@ -67,9 +68,14 @@ const ChatRoom = ({ roomId, userIdx, onClose }) => {
 
       // 특정 채팅방 구독, 새 메시지 실시간 수신
       client.subscribe(`/topic/chat/${roomId}`, (message) => {
-        const receivedMessage = JSON.parse(message.body);
-        // 새 메시지를 messages state에 추가
-        setMessages((prev) => [...prev, receivedMessage]);
+        const newMsg = JSON.parse(message.body);
+        console.log('Received new message via WebSocket:', newMsg);
+        setMessages((prev) => {
+            if (prev.some(msg => msg.message_idx === newMsg.message_idx)) {
+                return prev;
+            }
+            return [...prev, newMsg];
+        });
       });
     }, (error) => {
       console.error('STOMP 연결 오류:', error);
@@ -122,7 +128,7 @@ const ChatRoom = ({ roomId, userIdx, onClose }) => {
       }
     }
 
-    let messagePayload = {
+    const messagePayload = {
       room_idx: roomId,
       sender_idx: userIdx,
       content: content,
@@ -230,6 +236,7 @@ const ChatRoom = ({ roomId, userIdx, onClose }) => {
                 sx={{ width: 35, height: 35, marginLeft: '10px' }}
               />
             )}
+   
           </Box>
         ))}
         <div ref={messagesEndRef} />  {/* 스크롤 최근 위치로 */}

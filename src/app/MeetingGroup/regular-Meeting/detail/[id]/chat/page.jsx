@@ -112,9 +112,9 @@ export default function ChatPage() {
       <ChatRoom
         roomId={room.room_idx}
         userIdx={userIdx}
+        roomInfo={roomInfo}
         userName="TODO_유저이름"
         onClose={() => router.back()}
-        roomInfo={roomInfo}
       />
     </div>
   );
