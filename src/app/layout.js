@@ -8,6 +8,7 @@ import Footer from './component/Footer';
 
 
 const Layout = ({ children }) => {
+  
   return (
     <html lang="ko">
         
@@ -17,7 +18,7 @@ const Layout = ({ children }) => {
         {children}
         
         <Footer />    
-
+        
       </body>
      
     </html>

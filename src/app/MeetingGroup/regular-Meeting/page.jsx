@@ -109,7 +109,6 @@ export default function RegularMeetingPage() {
     }
   }, [token]); //, router
 
-
   useEffect(() => {
     if (userIdx) {
       fetchMeetings();
@@ -160,11 +159,9 @@ export default function RegularMeetingPage() {
     }
   };
 
-
   useEffect(() => {
     console.log("Is Top Visible:", isTopVisible);
   }, [isTopVisible]);
-
 
   useEffect(() => {
     console.log("Adding scroll event listener");
@@ -178,8 +175,6 @@ export default function RegularMeetingPage() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-
 
   const handleCardClick = (meeting_idx) => {
     console.log("Navigating to meeting detail:", meeting_idx);
@@ -251,15 +246,12 @@ export default function RegularMeetingPage() {
     }
   };
 
-
-
   // 태그 버튼 검색 필터
   const handleTagFilter = (tag) => {
     setFilteredMeetings(meetings.filter((meeting) =>
       Array.isArray(meeting.hashtags) && meeting.hashtags.some(h => h.name === tag)
     ));
   };
-
 
   // 지역 버튼
   const handleRegionFilter = (region) => {
@@ -298,7 +290,6 @@ export default function RegularMeetingPage() {
     updateTopSearches(updatedSearchHistory);
   };
 
-
   // 태그 페이징 
   const handleTagPagination = (direction) => {
     setTagPage((prevPage) => {
@@ -315,7 +306,6 @@ export default function RegularMeetingPage() {
     });
   };
 
-  // const visibleTags = allHashtags.slice(tagPage * 7, (tagPage + 1) * 7);
   // visibleTags에서 slice 적용
   const visibleTags = Array.isArray(allHashtags)
     ? allHashtags.slice(tagPage * 7, (tagPage + 1) * 7)
@@ -351,7 +341,7 @@ export default function RegularMeetingPage() {
     const updatedSearchHistory = { ...searchHistory };
     updatedSearchHistory[term] = (updatedSearchHistory[term] || 0) + 1;
     setSearchHistory(updatedSearchHistory);
-    localStorage.setItem('searchHistory', JSON.stringify(updatedSearchHistory)); // 로컬스토리지 저장
+    localStorage.setItem('searchHistory', JSON.stringify(updatedSearchHistory));
     updateTopSearches(updatedSearchHistory);
   };
 
@@ -390,7 +380,6 @@ export default function RegularMeetingPage() {
             <AddIcon />
           </Fab>
         </Typography>
-
       </Box>
       <br />
 
@@ -469,7 +458,7 @@ export default function RegularMeetingPage() {
                     </Typography>
                     <Typography
                       variant="body1"
-                      sx={{ color: 'blue', cursor: 'pointer', textDecoration: 'none', color: 'black', marginRight: '50px' }}
+                      sx={{ color: 'black', cursor: 'pointer', textDecoration: 'none', marginRight: '50px' }}
                       onClick={() => handleSearchFromList(topSearches[currentRank][0])}
                     >
                       {topSearches[currentRank][0]}
@@ -501,7 +490,7 @@ export default function RegularMeetingPage() {
                       </TableCell>
                       <TableCell
                         align="center"
-                        sx={{ color: 'blue', cursor: 'pointer', textDecoration: 'none', color: 'black' }}
+                        sx={{ color: 'black', cursor: 'pointer', textDecoration: 'none' }}
                         onClick={() => handleSearchFromList(term)}
                       >
                         {term}
@@ -568,120 +557,126 @@ export default function RegularMeetingPage() {
 
       {/* 모임 카드 */}
       <Grid container spacing={3} justifyContent="center">
-        {filteredMeetings.map((meeting) => (
-          <Grid item key={meeting.meeting_idx}>
-            <Paper
-              elevation={3}
-              onClick={() => handleCardClick(meeting.meeting_idx)}
-              sx={{
-                cursor: 'pointer',
-                width: '360px',
-                height: '230px',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '16px',
-                backgroundColor: meeting.favorites_idx ? '#ffe5b4' : '#f5eedc',
-                color: meeting.favorites_idx ? '#704C2E' : '#595959',
-                boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                position: 'relative',
-                borderRadius: '12px',
-                transition: 'background-color 0.3s, transform 0.3s',
-                '&:hover': {
-                  backgroundColor: meeting.favorites_idx ? '#ffd18c' : '#e4d7c5',
-                  transform: 'scale(1.02)',
-                },
-              }}
-            >
-              {/* 하트 아이콘 */}
-              <Box
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleLike(meeting.meeting_idx);
-                }}
-                sx={{
-                  position: 'absolute',
-                  top: '10px',
-                  left: '10px',
-                  cursor: 'pointer',
-                  zIndex: 10,
-                  animation: meeting.favorites_idx ? 'likeAnimation 0.3s ease-in-out' : 'none',
-                }}
-              >
-                <img
-                  src={meeting.favorites_idx ? '/images/heart-fill-icon.svg' : '/images/heart-icon.svg'}
-                  alt="좋아요"
-                  style={{ width: '25px', height: '25px', }}
-                />
-              </Box>
+        {filteredMeetings.map((meeting) => {
+          const totalMembersCount = Array.isArray(meeting.membersAvatar) ? meeting.membersAvatar.length + 1 : 1; // 리더 포함
+          const remainingMembersCount = meeting.personnel - totalMembersCount;
 
-              {/* 모임 이미지 */}
-              <Box
-                component="img"
-                src={`${IMAGE_BASE_URL}/${meeting.profile_image}`}
-                //src={`${BASE_URL}/uploads/${meeting.profile_image}`}  // {meeting.profile_image}
-                alt="모임 대표 이미지"
+          return (
+            <Grid item key={meeting.meeting_idx}>
+              <Paper
+                elevation={3}
+                onClick={() => handleCardClick(meeting.meeting_idx)}
                 sx={{
-                  width: '140px',
-                  height: '140px',
-                  borderRadius: '8px',
-                  objectFit: 'cover',
-                  marginRight: '16px',
-                  flexShrink: 0,
-                }}
-                onError={(e) => { e.target.src = '/images/camping2.png'; }} // 기본 이미지 설정
-              />
-              {/* 모임 설명 */}
-              <Box
-                sx={{
-                  width: 'calc(100% - 146px)',
-                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  width: '360px',
+                  height: '230px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '16px',
+                  backgroundColor: meeting.favorites_idx ? '#ffe5b4' : '#f5eedc',
+                  color: meeting.favorites_idx ? '#704C2E' : '#595959',
+                  boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                  position: 'relative',
+                  borderRadius: '12px',
+                  transition: 'background-color 0.3s, transform 0.3s',
+                  '&:hover': {
+                    backgroundColor: meeting.favorites_idx ? '#ffd18c' : '#e4d7c5',
+                    transform: 'scale(1.02)',
+                  },
                 }}
               >
-                <Typography variant="h6"
+                {/* 하트 아이콘 */}
+                <Box
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleLike(meeting.meeting_idx);
+                  }}
                   sx={{
-                    fontWeight: 'bold',
-                    marginBottom: '8px',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
+                    position: 'absolute',
+                    top: '10px',
+                    left: '10px',
+                    cursor: 'pointer',
+                    zIndex: 10,
+                    animation: meeting.favorites_idx ? 'likeAnimation 0.3s ease-in-out' : 'none',
                   }}
                 >
-                  {meeting.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {meeting.region} · {meeting.subregion}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {meeting.created_at}
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ marginRight: '8px' }}>
-                    정원: {Array.isArray(meeting.membersAvatar) ? meeting.membersAvatar.length : 0} /{meeting.personnel}
-                  </Typography>
-                  <AvatarGroup max={4}>
-                    {Array.isArray(meeting.membersAvatar) &&
-                      meeting.membersAvatar
-                        .sort(() => Math.random() - 0.5)
-                        .slice(0, 4)
-                        .map((mem) => (
-                          <Avatar key={mem.user_idx || mem.avatar_url} src={`${IMAGE_BASE_URL}/${mem.avatar_url}`} />
-                        ))}
+                  <img
+                    src={meeting.favorites_idx ? '/images/heart-fill-icon.svg' : '/images/heart-icon.svg'}
+                    alt="좋아요"
+                    style={{ width: '25px', height: '25px' }}
+                  />
+                </Box>
 
-                  </AvatarGroup>
+                {/* 모임 이미지 */}
+                <Box
+                  component="img"
+                  src={`${IMAGE_BASE_URL}/${meeting.profile_image}`}
+                  alt="모임 대표 이미지"
+                  sx={{
+                    width: '140px',
+                    height: '140px',
+                    borderRadius: '8px',
+                    objectFit: 'cover',
+                    marginRight: '16px',
+                    flexShrink: 0,
+                  }}
+                  onError={(e) => { e.target.src = '/images/camping2.png'; }} // 기본 이미지 설정
+                />
+                {/* 모임 설명 */}
+                <Box
+                  sx={{
+                    width: 'calc(100% - 146px)',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Typography variant="h6"
+                    sx={{
+                      fontWeight: 'bold',
+                      marginBottom: '8px',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {meeting.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {meeting.region} · {meeting.subregion}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {meeting.created_at}
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ marginRight: '8px' }}>
+                      정원: {totalMembersCount} / {meeting.personnel}
+                    </Typography>
+                    <AvatarGroup max={4}>
+                      {/* 리더의 아바타 추가 */}
+                      <Avatar src={`${IMAGE_BASE_URL}/${meeting.leader_avatar_url}`} alt={meeting.leader_username} />
+                      {/* 일반 멤버 아바타 */}
+                      {Array.isArray(meeting.membersAvatar) &&
+                        meeting.membersAvatar
+                          .sort(() => Math.random() - 0.5)
+                          .slice(0, 3)
+                          .map((mem) => (
+                            <Avatar key={mem.user_idx || mem.avatar_url} src={`${IMAGE_BASE_URL}/${mem.avatar_url}`} />
+                          ))}
+                    </AvatarGroup>
+                  </Box>
+                  <Box sx={{ marginTop: '8px', display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    {Array.isArray(meeting.hashtags) && meeting.hashtags.map((tagObj) => (
+                      <Chip
+                        key={tagObj.hashtag_idx || tagObj.name} // 고유한 키 사용
+                        label={tagObj.name}
+                        sx={{ backgroundColor: '#b3d468', fontSize: '12px' }}
+                      />
+                    ))}
+                  </Box>
                 </Box>
-                <Box sx={{ marginTop: '8px', display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {Array.isArray(meeting.hashtags) && meeting.hashtags.map((tagObj) => (
-                    <Chip
-                      key={tagObj.hashtag_idx || tagObj.name} // 고유한 키 사용
-                      label={tagObj.name}
-                      sx={{ backgroundColor: '#b3d468', fontSize: '12px' }}
-                    />
-                  ))}
-                </Box>
-              </Box>
-            </Paper>
-          </Grid>
-        ))}
+              </Paper>
+            </Grid>
+          )
+        })}
       </Grid>
 
       <Box>

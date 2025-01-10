@@ -1,10 +1,19 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import ForestIcon from '@mui/icons-material/Forest';
+import { usePathname } from 'next/navigation';
 
 const Footer = () => {
+  const pathname = usePathname();
+  
+  // 경로에 '/chat'이 포함되어 있으면 푸터 제외
+  // (예: '/MeetingGroup/regular-Meeting/detail/1/chat')
+  if (pathname.includes('/chat')) {
+    return null;
+  }
+
   return (
-    <footer style={{ backgroundColor: '#2e2f31', padding: '15px 0', textAlign: 'center' }}>
+    <footer style={{ backgroundColor: '#2e2f31', padding: '25px 0', textAlign: 'center',position: 'relative', }}>
       {/* 상호명과 아이콘 */}
       <Box
         sx={{

@@ -33,6 +33,9 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import axiosInstance from '../../../../utils/axiosInstance'; // axios 인스턴스 import
 import useAuthStore from 'store/authStore';
 import { getCookie } from "cookies-next";
+// 상단에 아이콘 관련 임포트 추가
+import { Icon } from '@iconify/react';
+import crownIcon from '@iconify-icons/mdi/crown';
 
 export default function MeetPage() {
   const BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL || "http://localhost:8080/api";
@@ -200,6 +203,7 @@ export default function MeetPage() {
       .then(() => {
         alert("가입되었습니다!");
         fetchMeetingDetails(); // 가입 후 다시 모임 정보 갱신
+        fetchMeetingMembers(); // 멤버 목록도 갱신
       })
       .catch((err) => {
         if (err.response?.status === 409) {
@@ -220,6 +224,7 @@ export default function MeetPage() {
       .then(() => {
         alert("모임을 성공적으로 탈퇴했습니다.");
         fetchMeetingDetails();
+        fetchMeetingMembers();
       })
       .catch((err) => {
         console.error("모임 탈퇴 실패:", err);
@@ -333,6 +338,7 @@ export default function MeetPage() {
 
   // 멤버 표시(최대 5명까지)
   const displayedMembers = Array.isArray(members) ? members.slice(0, 4) : [];
+  const totalMembersCount = Array.isArray(members) ? members.length + 1 : 1; // 리더 포함
   const remainingMembersCount = Array.isArray(members)
     ? members.length - displayedMembers.length
     : 0;
@@ -504,7 +510,7 @@ export default function MeetPage() {
               </Typography>
               <Typography variant="body2" sx={{ color: "black" }}>
                 * 장소: {meeting.region} · {meeting.subregion} <br />
-                * 정원: {members.length} / {meeting.personnel} <br />
+                * 정원: {totalMembersCount} / {meeting.personnel} <br />
                 * 내용: {meeting.description || "안녕하세요. 환영합니다."}
               </Typography>
             </Box>
@@ -654,21 +660,31 @@ export default function MeetPage() {
             ) : (
               // 미가입자
               <>
-                <Typography variant="body2" fontWeight="bold" sx={{ color: "black" }}>
-                  "{host.name}" 모임에 가입해 다양한 추억들을 쌓아보세요!
-                </Typography>
-                <Button
-                  variant="contained"
-                  sx={{
-                    mt: 1.5,
-                    backgroundColor: "#28a745",
-                    color: "white",
-                    "&:hover": { backgroundColor: "#218838" },
-                  }}
-                  onClick={handleJoinMeeting}
-                >
-                  가입하기
-                </Button>
+                {totalMembersCount >= meeting.personnel ? (
+                  <Typography variant="body2" fontWeight="bold" sx={{ color: "green" }}>
+                    "{host.name}" 모임이 정원에 도달했습니다.<br />
+                    다른 모임을 찾아보세요!
+                  </Typography>
+                ) : (
+                  <>
+                    <Typography variant="body2" fontWeight="bold" sx={{ color: "black" }}>
+                      "{host.name}" 모임에 가입해 다양한 추억들을 쌓아보세요!
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        mt: 1.5,
+                        backgroundColor: "#28a745",
+                        color: "white",
+                        "&:hover": { backgroundColor: "#218838" },
+                      }}
+                      onClick={handleJoinMeeting}
+                      disabled={totalMembersCount >= meeting.personnel}
+                    >
+                      가입하기
+                    </Button>
+                  </>
+                )}
               </>
             )}
           </Box>
@@ -700,149 +716,165 @@ export default function MeetPage() {
                 모든 멤버
               </Typography>
               <Grid container spacing={2}>
-                {Array.isArray(members) && members.length > 0 ? (
-                  members.map((member) => (
-                    <Grid item xs={4} sm={3} key={member.user_idx} sx={{ textAlign: 'center' }}>
-                      <Avatar
-                        src={`${IMAGE_BASE_URL}/${member.avatar_url}`}
-                        alt={member.username}
-                        sx={{ width: 60, height: 60, margin: '0 auto' }}
-                      />
-                      <Typography variant="body2" sx={{ mt: 1 }}>
-                        {member.username}
-                      </Typography>
-                    </Grid>
-                  ))
-                ) : (
-                  <Typography>멤버가 없습니다.</Typography>
-                )}
-              </Grid>
-              <Box sx={{ textAlign: 'right', mt: 2 }}>
-                <Button
-                  variant="contained"
-                  onClick={closeModal}
-                  sx={{
-                    backgroundColor: "#28a745",
-                    "&:hover": { backgroundColor: "#218838" }
-                  }}
-                >
-                  닫기
-                </Button>
-              </Box>
-            </Box>
-          </Modal>
+      {/* 리더 표시 */}
+      <Grid item xs={4} sm={3} sx={{ textAlign: 'center' }}>
+        <Avatar
+          src={`${IMAGE_BASE_URL}/${meeting.leader_avatar_url}`}
+          alt={meeting.leader_username}
+          sx={{ width: 60, height: 60, margin: '0 auto' }}
+        />
+        <Box sx={{ display: 'flex', alignItems: 'center', mt: 1, marginLeft: 0.5 }}>
+          <Icon icon={crownIcon} color="#FFD700" width="16" height="16" />
+          <Typography variant="body2" sx={{ marginRight: 0.5 }}>
+            {meeting.leader_username}
+          </Typography>
         </Box>
+      </Grid>
 
-        {/* 5) 게시판 / 사진첩 2개 박스 가로 배치*/}
-        <Box sx={{ mb: 4 }}>
-          <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
-            {/* ------- (1) 게시판 박스 ------- */}
-            <Box
-              sx={{
-                flex: 1,
-                backgroundColor: "#ffffff",
-                borderRadius: "8px",
-                boxShadow: 2,
-                padding: 2,
-                textAlign: "center",
-                cursor: "pointer",
-                "&:hover": { backgroundColor: "#f8f8f8" },
-              }}
-              onClick={() => {
-                if (meeting.member || Number(userIdx) === Number(meeting.leader_idx)) {
-                  router.push(`/MeetingGroup/regular-Meeting/detail/${meetingId}/bulletinboard`);
-                } else {
-                  alert("가입이 필요합니다.");
-                }
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{ fontWeight: "bold", color: "black", mb: 1 }}
-              >
-                게시판
-              </Typography>
-              <Button
-                variant="outlined"
-                endIcon={<ArrowForwardIosIcon fontSize="small" />}
-                sx={{
-                  fontWeight: "bold",
-                  color: "#28a745",
-                  borderColor: "#28a745",
-                  "&:hover": {
-                    backgroundColor: "#28a745",
-                    color: "#ffffff",
-                  },
-                }}
-                onClick={(e) => {
-                  e.stopPropagation(); // 부모 Box의 onClick이 먼저 실행되지 않도록
-                  if (meeting.member || Number(userIdx) === Number(meeting.leader_idx)) {
-                    router.push(`/MeetingGroup/regular-Meeting/detail/${meetingId}/bulletinboard`);
-                  } else {
-                    alert("가입이 필요합니다.");
-                  }
-                }}
-              >
-                더보기
-              </Button>
-            </Box>
+      {/* 일반 멤버 표시 */}
+      {Array.isArray(members) && members.length > 0 ? (
+        members.map((member) => (
+          <Grid item xs={4} sm={3} key={member.user_idx} sx={{ textAlign: 'center' }}>
+            <Avatar
+              src={`${IMAGE_BASE_URL}/${member.avatar_url}`}
+              alt={member.username}
+              sx={{ width: 60, height: 60, margin: '0 auto' }}
+            />
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              {member.username}
+            </Typography>
+          </Grid>
+        ))
+      ) : (
+        <Typography>멤버가 없습니다.</Typography>
+      )}
+    </Grid>
+    <Box sx={{ textAlign: 'right', mt: 2 }}>
+      <Button
+        variant="contained"
+        onClick={closeModal}
+        sx={{
+          backgroundColor: "#28a745",
+          "&:hover": { backgroundColor: "#218838" }
+        }}
+      >
+        닫기
+      </Button>
+    </Box>
+  </Box>
+</Modal>
+    </Box>
 
-            {/* ------- (2) 사진첩 박스 ------- */}
-            <Box
-              sx={{
-                flex: 1,
-                backgroundColor: "#ffffff",
-                borderRadius: "8px",
-                boxShadow: 2,
-                padding: 2,
-                textAlign: "center",
-                cursor: "pointer",
-                "&:hover": { backgroundColor: "#f8f8f8" },
-              }}
-              onClick={() => {
-                if (meeting.member || Number(userIdx) === Number(meeting.leader_idx)) {
-                  router.push(`/MeetingGroup/regular-Meeting/detail/${meetingId}/photogallery`);
-                } else {
-                  alert("가입한 멤버만 접근 가능합니다.");
-                }
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{ fontWeight: "bold", color: "black", mb: 1 }}
-              >
-                사진첩
-              </Typography>
-              <Button
-                variant="outlined"
-                endIcon={<ArrowForwardIosIcon fontSize="small" />}
-                sx={{
-                  fontWeight: "bold",
-                  color: "#28a745",
-                  borderColor: "#28a745",
-                  "&:hover": {
-                    backgroundColor: "#28a745",
-                    color: "#ffffff",
-                  },
-                }}
-                onClick={(e) => {
-                  e.stopPropagation(); // 부모 Box의 onClick이 먼저 실행되지 않도록
-                  if (meeting.member || Number(userIdx) === Number(meeting.leader_idx)) {
-                    router.push(`/MeetingGroup/regular-Meeting/detail/${meetingId}/photogallery`);
-                  } else {
-                    alert("가입한 멤버만 접근 가능합니다.");
-                  }
-                }}
-              >
-                더보기
-              </Button>
-            </Box>
-          </Box>
-        </Box>
+        {/* 5) 게시판 / 사진첩 2개 박스 가로 배치*/ }
+  <Box sx={{ mb: 4 }}>
+    <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+      {/* ------- (1) 게시판 박스 ------- */}
+      <Box
+        sx={{
+          flex: 1,
+          backgroundColor: "#ffffff",
+          borderRadius: "8px",
+          boxShadow: 2,
+          padding: 2,
+          textAlign: "center",
+          cursor: "pointer",
+          "&:hover": { backgroundColor: "#f8f8f8" },
+        }}
+        onClick={() => {
+          if (meeting.member || Number(userIdx) === Number(meeting.leader_idx)) {
+            router.push(`/MeetingGroup/regular-Meeting/detail/${meetingId}/bulletinboard`);
+          } else {
+            alert("가입이 필요합니다.");
+          }
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: "bold", color: "black", mb: 1 }}
+        >
+          게시판
+        </Typography>
+        <Button
+          variant="outlined"
+          endIcon={<ArrowForwardIosIcon fontSize="small" />}
+          sx={{
+            fontWeight: "bold",
+            color: "#28a745",
+            borderColor: "#28a745",
+            "&:hover": {
+              backgroundColor: "#28a745",
+              color: "#ffffff",
+            },
+          }}
+          onClick={(e) => {
+            e.stopPropagation(); // 부모 Box의 onClick이 먼저 실행되지 않도록
+            if (meeting.member || Number(userIdx) === Number(meeting.leader_idx)) {
+              router.push(`/MeetingGroup/regular-Meeting/detail/${meetingId}/bulletinboard`);
+            } else {
+              alert("가입이 필요합니다.");
+            }
+          }}
+        >
+          더보기
+        </Button>
       </Box>
 
-      {/* 6) 모임 수정 모달*/}
-      <Dialog open={editModalOpen} onClose={closeEditModal} fullWidth maxWidth="sm">
+      {/* ------- (2) 사진첩 박스 ------- */}
+      <Box
+        sx={{
+          flex: 1,
+          backgroundColor: "#ffffff",
+          borderRadius: "8px",
+          boxShadow: 2,
+          padding: 2,
+          textAlign: "center",
+          cursor: "pointer",
+          "&:hover": { backgroundColor: "#f8f8f8" },
+        }}
+        onClick={() => {
+          if (meeting.member || Number(userIdx) === Number(meeting.leader_idx)) {
+            router.push(`/MeetingGroup/regular-Meeting/detail/${meetingId}/photogallery`);
+          } else {
+            alert("가입한 멤버만 접근 가능합니다.");
+          }
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: "bold", color: "black", mb: 1 }}
+        >
+          사진첩
+        </Typography>
+        <Button
+          variant="outlined"
+          endIcon={<ArrowForwardIosIcon fontSize="small" />}
+          sx={{
+            fontWeight: "bold",
+            color: "#28a745",
+            borderColor: "#28a745",
+            "&:hover": {
+              backgroundColor: "#28a745",
+              color: "#ffffff",
+            },
+          }}
+          onClick={(e) => {
+            e.stopPropagation(); // 부모 Box의 onClick이 먼저 실행되지 않도록
+            if (meeting.member || Number(userIdx) === Number(meeting.leader_idx)) {
+              router.push(`/MeetingGroup/regular-Meeting/detail/${meetingId}/photogallery`);
+            } else {
+              alert("가입한 멤버만 접근 가능합니다.");
+            }
+          }}
+        >
+          더보기
+        </Button>
+      </Box>
+    </Box>
+  </Box>
+      </Box >
+
+    {/* 6) 모임 수정 모달*/ }
+    <Dialog open = { editModalOpen } onClose = { closeEditModal } fullWidth maxWidth = "sm" >
         <DialogTitle>모임 수정하기</DialogTitle>
         <DialogContent>
           <TextField
@@ -925,7 +957,7 @@ export default function MeetPage() {
             수정하기
           </Button>
         </DialogActions>
-      </Dialog>
-    </Box>
+      </Dialog >
+    </Box >
   );
 }
